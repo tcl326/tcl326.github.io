@@ -456,7 +456,15 @@ footer .footer-below {
 
 .portfolio-modal .modal-content h2 {
     margin: 0;
+    font-size: 2em;
+}
+
+
+@media(min-width:768px) {
+.portfolio-modal .modal-content h2 {
+    margin: 0;
     font-size: 3em;
+}
 }
 
 .portfolio-modal .modal-content img {
