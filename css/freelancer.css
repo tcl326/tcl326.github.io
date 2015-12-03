@@ -507,3 +507,7 @@ footer .footer-below {
     opacity: 0;
 }
 
+img.portfolio-modal{
+    border: 4px solid;
+    max-height: 300px;
+}
