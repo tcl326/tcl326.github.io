@@ -458,6 +458,9 @@ footer .footer-below {
     margin: 0;
     font-size: 2em;
 }
+.portfolio-modal .modal-content p {
+    text-align:  justify;
+}
 
 
 @media(min-width:768px) {
