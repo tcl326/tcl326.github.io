@@ -88,14 +88,21 @@ hr.star-primary:after {
 }
 
 header {
+
     text-align: center;
     color: #f2f2f2;
     background: url("IMG_6610Smaller.jpg") no-repeat center center fixed; 
+        background-size: 100% 100%;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
     background-size: cover;
 }
+
+@media (max-width: @iphone-screen) {
+    background-attachment: scroll;
+} 
+
 
 header .container {
     padding-top: 100px;
