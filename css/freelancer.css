@@ -92,11 +92,9 @@ header {
     text-align: center;
     color: #f2f2f2;
     background: url("IMG_6610Smaller.jpg") no-repeat center center fixed; 
-    background-size: auto 100%;   
-    -webkit-background-size: cover;
-    -moz-background-size: cover;
-    -o-background-size: cover;
-    background-size: cover;
+    background-size: cover;   
+    height: 100%;
+    overflow: hidden;
 
 }
 @media only screen and (orientation: portrait) and (device-width: 320px), (device-width: 768px) {
