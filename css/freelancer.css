@@ -94,8 +94,9 @@ hr.star-primary:after {
 header {
 
     text-align: center;
-    color: #f2f2f2;
-    background: url("IMG_6610Smaller.jpg") no-repeat center center fixed;
+
+    color: #ffffff;
+    background: url("mySisIsGreat.jpg") no-repeat center center fixed;
     background-size: cover;
     /*background-color: #a9a9a9;*/
     height: 100%;
@@ -119,7 +120,7 @@ header {
 
 
 header .container {
-    padding-top: 100px;
+    padding-top: 150px;
     padding-bottom: 20px;
 
 }
@@ -132,13 +133,14 @@ header img {
 header .intro-text .name {
     display: block;
     text-transform: uppercase;
+    outline-color: invert;
     font-family: Montserrat,"Helvetica Neue",Helvetica,Arial,sans-serif;
     font-size: 1.75em;
     font-weight: 700;
 }
 header .intro-text .chinese{
     display: block;
-    color: #d9d9d9;
+    color: #f2f2f2;
     font-size: 1em;
 }
 
@@ -149,8 +151,8 @@ header .intro-text .skills {
 
 @media(min-width:768px) {
     header .container {
-        padding-top: 100px;
-        padding-bottom: 20px;
+        padding-top: 150px;
+        padding-bottom: 50px;
     }
 
     header .intro-text .name {
