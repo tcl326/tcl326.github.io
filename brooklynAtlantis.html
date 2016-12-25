@@ -69,22 +69,108 @@
         </div>
         <!-- /.container-fluid -->
     </nav>
-    <section class"success" id="post">
+    <section class "success" id="post">
         <div class="container">
             <div class="row">
                 <div class="col-lg-10 col-lg-offset-1">
                     <div class="body">
-                        <p>
-                        <h2> In something</h2>
-                      </p>
+                        <h2> Computer Vision: River Segmentation</h2>
                         <hr>
-                        <img class="img-responsive" src="http://placehold.it/900x300" alt="">
+                        <img class="img-responsive" src="img/portfolio/brooklynAtlantis/pic2.jpeg" alt="">
                         <hr>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ducimus, vero, obcaecati, aut, error quam sapiente nemo saepe quibusdam sit excepturi nam quia corporis eligendi eos magni recusandae laborum minus inventore?</p>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ut, tenetur natus doloremque laborum quos iste ipsum rerum obcaecati impedit odit illo dolorum ab tempora nihil dicta earum fugiat. Temporibus, voluptatibus.</p>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eos, doloribus, dolorem iusto blanditiis unde eius illum consequuntur neque dicta incidunt ullam ea hic porro optio ratione repellat perspiciatis. Enim, iure!</p>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Error, nostrum, aliquid, animi, ut quas placeat totam sunt tempora commodi nihil ullam alias modi dicta saepe minima ab quo voluptatem obcaecati?</p>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Harum, dolor quis. Sunt, ut, explicabo, aliquam tenetur ratione tempore quidem voluptates cupiditate voluptas illo saepe quaerat numquam recusandae? Qui, necessitatibus, est!</p>
+                        <h3> about </h3>
+                        <p><b><a href="http://www.brooklynatlantis.poly.edu/">Brooklyn Atlantis Citizen Science </a> </b>is a project headed by Jeff Laut, a PhD fellow at New York University, that aims to monitor the Brooklyn Gowanus canal using the help
+                            of citizen science. The team built an Aquatic Robotic Vehicle (ARV) that acquires pictures of the canal and the water temperature, conductivity, dissolved oxygen, and pH of the canal's water. The picture taken of the canal
+                            is later published in a public domain where the public can help by tagging any recognizable object in the picture.</p>
+                        <p>To gather greater amount of data for analysis, the team seeks to develop an ambitious autonomous navigation system for the ARV using only the onboard monocular webcam as its perception and range sensor. To do so, I was tasked to
+                            develop a water segmentation algorithm that would identify canal shoreline using the onboard camera.</p>
+                        <h3> my role </h3>
+                        <p>Originally envisioned as a simple exercise of edge and line detection, the river shoreline identification task possesses significantly difficult due to the large variation in canal environment appearance. The reflection on the
+                            river would often cause false positives in geometric based approach.</p>
+                        <p>To robustly segment canal water from the canal walls, I conducted extensive literature review and decided to implement a variant of the entropy and texture based segmentation algorithm outlined in the paper <b><a href="http://home.iscte-iul.pt/~pfsao/papers/robio_2012.pdf"> Water Detection with Segmentation Guided Dynamic Texture Recognition</a></b>.
+                            </p>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="thumbnail">
+                                    <a href="img/portfolio/brooklynAtlantis/pic4.png" target="_blank">
+                                        <img src="img/portfolio/brooklynAtlantis/pic4.png" astyle="width:100%">
+                                        <div class="caption">
+                                            <p>Input image.</p>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="thumbnail">
+                                    <a href="img/portfolio/brooklynAtlantis/pic5.png" target="_blank">
+                                        <img src="img/portfolio/brooklynAtlantis/pic5.png" style="width:100%">
+                                        <div class="caption">
+                                            <p>River Segmentation Result.</p>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <h3> The Algorithm </h3>
+                        <p> The algorithm is outlined as follows: first the motion entropy of the water is extracted by tracking the feature movement, with the more complex moving features tagged as water and the less complex moving features as land. The
+                            tags are then propagated using texture cues. </p>
+                        <p> The motion entropy is calculated by first randomly initialize 250 motion trackers and tracking them using Optical Flow algorithm. By tracking the path of the individual trackers, we can calculate the randomness/complexity of its
+                            motion. The trackers are then divided based on its path entropy, with highly entropic markers representing water.</p>
+                        <p>The texture segmentation of the algorithm follows a two-stage process. The first stage is a K-means (k = 32) clustering based on appearance descriptors encompassing the Law’s Texture Energy Measure and the c1c2c3 shadow invariant
+                            color space of the image. For the second stage of segmentation process, the statistics of a larger area are learned and clustered based on the similarity using K-means (k=16) clustering method. Finally, the water tag obtained
+                            from the motion entropy is propagated using the clustered texture.</p>
+                        <div class="row">
+                          <div class="col-md-4">
+                              <div class="thumbnail">
+                                  <a href="img/portfolio/brooklynAtlantis/pic4.png" target="_blank">
+                                      <img src="img/portfolio/brooklynAtlantis/pic4.png" astyle="width:100%">
+                                      <div class="caption">
+                                          <p>Input video frame.</p>
+                                      </div>
+                                  </a>
+                              </div>
+                          </div>
+                            <div class="col-md-4">
+                                <div class="thumbnail">
+                                    <a href="img/portfolio/brooklynAtlantis/pic6.png" target="_blank">
+                                        <img src="img/portfolio/brooklynAtlantis/pic6.png" astyle="width:100%">
+                                        <div class="caption">
+                                            <p>Motion entropy result.</p>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="thumbnail">
+                                    <a href="img/portfolio/brooklynAtlantis/pic9.png" target="_blank">
+                                        <img src="img/portfolio/brooklynAtlantis/pic9.png" style="width:100%">
+                                        <div class="caption">
+                                            <p>First clustering result.</p>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="thumbnail">
+                                    <a href="img/portfolio/brooklynAtlantis/pic7.png" target="_blank">
+                                        <img src="img/portfolio/brooklynAtlantis/pic7.png" style="width:100%">
+                                        <div class="caption">
+                                            <p>Second clustering result.</p>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="thumbnail">
+                                    <a href="img/portfolio/brooklynAtlantis/pic5.png" target="_blank">
+                                        <img src="img/portfolio/brooklynAtlantis/pic5.png" astyle="width:100%">
+                                        <div class="caption">
+                                            <p>River segmentation result.</p>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
 
                     </div>
                 </div>
