@@ -74,16 +74,94 @@
             <div class="row">
                 <div class="col-lg-10 col-lg-offset-1">
                     <div class="body">
-                        <h1> Underconstruction </h1>
-                        <hr>
-                        <img class="img-responsive" src="http://placehold.it/900x300" alt="">
-                        <hr>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ducimus, vero, obcaecati, aut, error quam sapiente nemo saepe quibusdam sit excepturi nam quia corporis eligendi eos magni recusandae laborum minus inventore?</p>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ut, tenetur natus doloremque laborum quos iste ipsum rerum obcaecati impedit odit illo dolorum ab tempora nihil dicta earum fugiat. Temporibus, voluptatibus.</p>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eos, doloribus, dolorem iusto blanditiis unde eius illum consequuntur neque dicta incidunt ullam ea hic porro optio ratione repellat perspiciatis. Enim, iure!</p>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Error, nostrum, aliquid, animi, ut quas placeat totam sunt tempora commodi nihil ullam alias modi dicta saepe minima ab quo voluptatem obcaecati?</p>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Harum, dolor quis. Sunt, ut, explicabo, aliquam tenetur ratione tempore quidem voluptates cupiditate voluptas illo saepe quaerat numquam recusandae? Qui, necessitatibus, est!</p>
+                        <h2> Kalman Filter </h2>
+                        <h3> About </h2>
+                        <p>For my summer research at the NYUAD Biomechanics Laboratory, I was tasked to build a proof-of-concept prototype of to measure plant stalk flexural rigidity. To measure the angular position of the prototype, a significant value for the flexural rigidity calculation, I used an inertial measurement unit (IMU) with Kalman filter to obtain an accurate angular data.</p>
+                        <h3> Device </h3>
+                        <p>I used the LSM9DS0 6 degrees of freedom IMU from Sparkfun and an Arduino Pro 3.3V to measure the acceleration and gyration of the device. To find the angular data of the device I could not rely solely on the accelerometer value, due to its slow response rate, or on the gyroscope value, due to its tendency to drift. To fuse the two values together, I used the stochastic estimation Kalman filter. Below is the code.</p>
+                        <pre>
+                        <code>
+<span class="InlineComment">//&nbsp;Inlude&nbsp;the&nbsp;SFE_LSM9DS0&nbsp;and&nbsp;other&nbsp;required&nbsp;libraries.</span>
+#include&nbsp;&lt;SPI.h&gt;
+#include&nbsp;&lt;Wire.h&gt;
+#include&nbsp;&lt;SFE_LSM9DS0.h&gt;
+<p />
+<span class="InlineComment">//&nbsp;Initiate&nbsp;an&nbsp;instance&nbsp;of&nbsp;LSM9DS0</span>
+<span class="PreProcessorDirective">#define</span>&nbsp;LSM9DS0_XM&nbsp;&nbsp;0x1D
+<span class="PreProcessorDirective">#define</span>&nbsp;LSM9DS0_G&nbsp;&nbsp;&nbsp;0x6B
+LSM9DS0&nbsp;dof(MODE_I2C,&nbsp;LSM9DS0_G,&nbsp;LSM9DS0_XM);
 
+uint32_t&nbsp;timer;
+
+<span class="ValueType">void</span>&nbsp;setup()
+{
+&nbsp;&nbsp;Serial.begin(9600);&nbsp;
+&nbsp;&nbsp;uint16_t&nbsp;status&nbsp;=&nbsp;dof.begin();
+&nbsp;&nbsp;timer&nbsp;=&nbsp;micros();
+}
+
+<span class="InlineComment">//Initiate&nbsp;Kalman&nbsp;filter&nbsp;variables</span>
+
+<span class="ValueType">float</span>&nbsp;QAngle&nbsp;&nbsp;=&nbsp;&nbsp;0.01;
+<span class="ValueType">float</span>&nbsp;QGyro&nbsp;&nbsp;&nbsp;=&nbsp;&nbsp;0.0003;
+<span class="ValueType">float</span>&nbsp;RAngle&nbsp;&nbsp;=&nbsp;&nbsp;0.01;
+<span class="ValueType">float</span>&nbsp;xBias&nbsp;=&nbsp;0;
+<span class="ValueType">float</span>&nbsp;P0&nbsp;=&nbsp;0;
+<span class="ValueType">float</span>&nbsp;P1&nbsp;=&nbsp;0;
+<span class="ValueType">float</span>&nbsp;P2&nbsp;=&nbsp;0;
+<span class="ValueType">float</span>&nbsp;P3&nbsp;=&nbsp;0;
+<span class="ValueType">float</span>&nbsp;y,&nbsp;S;
+<span class="ValueType">float</span>&nbsp;K0,&nbsp;K1;
+<span class="ValueType">float</span>&nbsp;xAngle&nbsp;=&nbsp;0;
+<span class="ValueType">float</span>&nbsp;yAngle&nbsp;=&nbsp;0;
+<span class="ValueType">float</span>&nbsp;pi&nbsp;=&nbsp;3.141696;
+
+<span class="InlineComment">//Kalman&nbsp;module</span>
+<span class="ValueType">float</span>&nbsp;kalmanCalculate(<span class="ValueType">float</span>&nbsp;newAngle,&nbsp;<span class="ValueType">float</span>&nbsp;newRate,&nbsp;<span class="ValueType">double</span>&nbsp;looptime,&nbsp;<span class="ValueType">float</span>&nbsp;xAngle)
+{
+&nbsp;&nbsp;<span class="ValueType">double</span>&nbsp;dt&nbsp;=&nbsp;<span class="ValueType">double</span>(looptime);
+&nbsp;&nbsp;xAngle&nbsp;+=&nbsp;dt*(newRate-xBias);
+&nbsp;&nbsp;P0&nbsp;+=&nbsp;-1*dt*(P2+P1)+QAngle*dt;
+&nbsp;&nbsp;P1&nbsp;-=&nbsp;dt*P3;
+&nbsp;&nbsp;P2&nbsp;-=&nbsp;dt*P3;
+&nbsp;&nbsp;P3&nbsp;+=&nbsp;QGyro*dt;
+&nbsp;&nbsp;y&nbsp;=&nbsp;newAngle-xAngle;
+&nbsp;&nbsp;S&nbsp;=&nbsp;P0+RAngle;
+&nbsp;&nbsp;K0&nbsp;=&nbsp;P0/S;
+&nbsp;&nbsp;K1&nbsp;=&nbsp;P2/S;
+&nbsp;&nbsp;xAngle&nbsp;+=&nbsp;&nbsp;K0*y;
+&nbsp;&nbsp;xBias&nbsp;&nbsp;+=&nbsp;&nbsp;K1*y;
+&nbsp;&nbsp;P0&nbsp;-=&nbsp;K0*P0;
+&nbsp;&nbsp;P1&nbsp;-=&nbsp;K0*P1;
+&nbsp;&nbsp;P2&nbsp;-=&nbsp;K1*P0;
+&nbsp;&nbsp;P3&nbsp;-=&nbsp;K1*P1;
+&nbsp;&nbsp;<span class="Statement">return</span>&nbsp;xAngle;
+}
+
+<span class="ValueType">void</span>&nbsp;loop()
+{
+&nbsp;&nbsp;<span class="ValueType">double</span>&nbsp;looptime&nbsp;=&nbsp;(<span class="ValueType">double</span>)(micros()-timer)/1000000;&nbsp;<span class="InlineComment">//&nbsp;Calculate&nbsp;delta&nbsp;time</span>
+&nbsp;&nbsp;timer&nbsp;=&nbsp;micros();
+&nbsp;&nbsp;dof.readGyro();
+&nbsp;&nbsp;dof.readAccel();
+&nbsp;&nbsp;<span class="ValueType">float</span>&nbsp;ay&nbsp;=&nbsp;dof.calcAccel(dof.ay);
+&nbsp;&nbsp;<span class="ValueType">float</span>&nbsp;ax&nbsp;=&nbsp;dof.calcAccel(dof.ax);
+&nbsp;&nbsp;<span class="ValueType">float</span>&nbsp;az&nbsp;=&nbsp;dof.calcAccel(dof.az);
+&nbsp;&nbsp;<span class="ValueType">float</span>&nbsp;roll&nbsp;=&nbsp;atan2(ay,sqrt(ax*ax)+(az*az))*180/pi;
+&nbsp;&nbsp;<span class="ValueType">float</span>&nbsp;pitch&nbsp;=&nbsp;atan2(-1*ax,az)*180/pi;
+&nbsp;&nbsp;<span class="ValueType">float</span>&nbsp;gz&nbsp;=&nbsp;dof.calcGyro(dof.gz);
+&nbsp;&nbsp;<span class="ValueType">float</span>&nbsp;gx&nbsp;=&nbsp;dof.calcGyro(dof.gx);
+&nbsp;&nbsp;<span class="ValueType">float</span>&nbsp;gy&nbsp;=&nbsp;dof.calcGyro(dof.gy);
+&nbsp;&nbsp;<span class="ValueType">float</span>&nbsp;rollRate&nbsp;=&nbsp;gz;
+&nbsp;&nbsp;<span class="ValueType">float</span>&nbsp;pitchRate&nbsp;=&nbsp;gy;
+&nbsp;&nbsp;xAngle&nbsp;=&nbsp;kalmanCalculate(roll,rollRate,looptime,xAngle);
+&nbsp;&nbsp;yAngle&nbsp;=&nbsp;kalmanCalculate(pitch,pitchRate,looptime,yAngle);
+
+&nbsp;&nbsp;Serial.print(xAngle);
+&nbsp;&nbsp;Serial.print(<span class="String">":&nbsp;"</span>);
+&nbsp;&nbsp;Serial.println(yAngle);
+}
+</code></pre>
                     </div>
                 </div>
             </div>
